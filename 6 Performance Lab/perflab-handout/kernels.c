@@ -10,10 +10,10 @@
  * Please fill in the following team struct 
  */
 team_t team = {
-    "bovik",              /* Team name */
+    "saj",              /* Team name */
 
-    "Harry Q. Bovik",     /* First member full name */
-    "bovik@nowhere.edu",  /* First member email address */
+    "shiaj",     /* First member full name */
+    "saj@nowhere.edu",  /* First member email address */
 
     "",                   /* Second member full name (leave blank if none) */
     ""                    /* Second member email addr (leave blank if none) */
@@ -47,7 +47,21 @@ void naive_rotate(int dim, pixel *src, pixel *dst)
 char rotate_descr[] = "rotate: Current working version";
 void rotate(int dim, pixel *src, pixel *dst) 
 {
-    naive_rotate(dim, src, dst);
+    int i, j, a, b;
+    int sdim = dim - 1;
+    for (i = 0; i < dim; i += 8)
+    {
+        for (j = 0; j < dim; j += 8)
+        {
+            for (a = i; a < i + 8; a++)
+            {
+                for (b = j; b < j + 8; b++)
+                {
+                    dst[RIDX(sdim - b, a, dim)] = src[RIDX(a, b, dim)];
+                }
+            }
+        }
+    }
 }
 
 /*********************************************************************
@@ -163,7 +177,187 @@ void naive_smooth(int dim, pixel *src, pixel *dst)
 char smooth_descr[] = "smooth: Current working version";
 void smooth(int dim, pixel *src, pixel *dst) 
 {
-    naive_smooth(dim, src, dst);
+    int i, j;
+
+    pixel current_pixel;
+    pixel *pcurrent_pixel = &current_pixel;
+
+    i = 0;
+    j = 0;
+    pcurrent_pixel->red =
+        (unsigned short)(((int)(src[RIDX(0, 0, dim)].red + src[RIDX(0, 1, dim)].red +
+                                src[RIDX(1, 0, dim)].red + src[RIDX(1, 1, dim)].red)) /
+                         4);
+    pcurrent_pixel->green =
+        (unsigned short)(((int)(src[RIDX(0, 0, dim)].green + src[RIDX(0, 1, dim)].green +
+                                src[RIDX(1, 0, dim)].green + src[RIDX(1, 1, dim)].green)) /
+                         4);
+    pcurrent_pixel->blue =
+        (unsigned short)(((int)(src[RIDX(0, 0, dim)].blue + src[RIDX(0, 1, dim)].blue +
+                                src[RIDX(1, 0, dim)].blue + src[RIDX(1, 1, dim)].blue)) /
+                         4);
+    dst[RIDX(0, 0, dim)] = current_pixel;
+
+    i = 0;
+    j = dim - 1;
+    pcurrent_pixel->red =
+        (unsigned short)(((int)(src[RIDX(i, j, dim)].red + src[RIDX(i + 1, j, dim)].red +
+                                src[RIDX(i, j - 1, dim)].red + src[RIDX(i + 1, j - 1, dim)].red)) /
+                         4);
+    pcurrent_pixel->green =
+        (unsigned short)(((int)(src[RIDX(i, j, dim)].green + src[RIDX(i + 1, j, dim)].green +
+                                src[RIDX(i, j - 1, dim)].green + src[RIDX(i + 1, j - 1, dim)].green)) /
+                         4);
+    pcurrent_pixel->blue =
+        (unsigned short)(((int)(src[RIDX(i, j, dim)].blue + src[RIDX(i + 1, j, dim)].blue +
+                                src[RIDX(i, j - 1, dim)].blue + src[RIDX(i + 1, j - 1, dim)].blue)) /
+                         4);
+    dst[RIDX(i, j, dim)] = current_pixel;
+
+    i = dim - 1;
+    j = 0;
+    pcurrent_pixel->red =
+        (unsigned short)(((int)(src[RIDX(i, j, dim)].red + src[RIDX(i - 1, j, dim)].red +
+                                src[RIDX(i, j + 1, dim)].red + src[RIDX(i - 1, j + 1, dim)].red)) /
+                         4);
+    pcurrent_pixel->green =
+        (unsigned short)(((int)(src[RIDX(i, j, dim)].green + src[RIDX(i - 1, j, dim)].green +
+                                src[RIDX(i, j + 1, dim)].green + src[RIDX(i - 1, j + 1, dim)].green)) /
+                         4);
+    pcurrent_pixel->blue =
+        (unsigned short)(((int)(src[RIDX(i, j, dim)].blue + src[RIDX(i - 1, j, dim)].blue +
+                                src[RIDX(i, j + 1, dim)].blue + src[RIDX(i - 1, j + 1, dim)].blue)) /
+                         4);
+    dst[RIDX(i, j, dim)] = current_pixel;
+
+    i = dim - 1;
+    j = dim - 1;
+    pcurrent_pixel->red =
+        (unsigned short)(((int)(src[RIDX(i, j, dim)].red + src[RIDX(i - 1, j, dim)].red +
+                                src[RIDX(i, j - 1, dim)].red + src[RIDX(i - 1, j - 1, dim)].red)) /
+                         4);
+    pcurrent_pixel->green =
+        (unsigned short)(((int)(src[RIDX(i, j, dim)].green + src[RIDX(i - 1, j, dim)].green +
+                                src[RIDX(i, j - 1, dim)].green + src[RIDX(i - 1, j - 1, dim)].green)) /
+                         4);
+    pcurrent_pixel->blue =
+        (unsigned short)(((int)(src[RIDX(i, j, dim)].blue + src[RIDX(i - 1, j, dim)].blue +
+                                src[RIDX(i, j - 1, dim)].blue + src[RIDX(i - 1, j - 1, dim)].blue)) /
+                         4);
+    dst[RIDX(i, j, dim)] = current_pixel;
+
+    j = 0;
+    for (i = 1; i < dim - 1; i++)
+    {
+        pcurrent_pixel->red =
+            (unsigned short)(((int)(src[RIDX(i - 1, j, dim)].red + src[RIDX(i - 1, j + 1, dim)].red +
+                                    src[RIDX(i, j, dim)].red + src[RIDX(i, j + 1, dim)].red +
+                                    src[RIDX(i + 1, j, dim)].red + src[RIDX(i + 1, j + 1, dim)].red)) /
+                             6);
+        pcurrent_pixel->green =
+            (unsigned short)(((int)(src[RIDX(i - 1, j, dim)].green + src[RIDX(i - 1, j + 1, dim)].green +
+                                    src[RIDX(i, j, dim)].green + src[RIDX(i, j + 1, dim)].green +
+                                    src[RIDX(i + 1, j, dim)].green + src[RIDX(i + 1, j + 1, dim)].green)) /
+                             6);
+        pcurrent_pixel->blue =
+            (unsigned short)(((int)(src[RIDX(i - 1, j, dim)].blue + src[RIDX(i - 1, j + 1, dim)].blue +
+                                    src[RIDX(i, j, dim)].blue + src[RIDX(i, j + 1, dim)].blue +
+                                    src[RIDX(i + 1, j, dim)].blue + src[RIDX(i + 1, j + 1, dim)].blue)) /
+                             6);
+        dst[RIDX(i, j, dim)] = current_pixel;
+    }
+
+    i = dim - 1;
+    for (j = 1; j < dim - 1; j++)
+    {
+        pcurrent_pixel->red =
+            (unsigned short)(((int)(src[RIDX(i, j, dim)].red + src[RIDX(i - 1, j, dim)].red +
+                                    src[RIDX(i, j - 1, dim)].red + src[RIDX(i - 1, j - 1, dim)].red +
+                                    src[RIDX(i, j + 1, dim)].red + src[RIDX(i - 1, j + 1, dim)].red)) /
+                             6);
+        pcurrent_pixel->green =
+            (unsigned short)(((int)(src[RIDX(i, j, dim)].green + src[RIDX(i - 1, j, dim)].green +
+                                    src[RIDX(i, j - 1, dim)].green + src[RIDX(i - 1, j - 1, dim)].green +
+                                    src[RIDX(i, j + 1, dim)].green + src[RIDX(i - 1, j + 1, dim)].green)) /
+                             6);
+        pcurrent_pixel->blue =
+            (unsigned short)(((int)(src[RIDX(i, j, dim)].blue + src[RIDX(i - 1, j, dim)].blue +
+                                    src[RIDX(i, j - 1, dim)].blue + src[RIDX(i - 1, j - 1, dim)].blue +
+                                    src[RIDX(i, j + 1, dim)].blue + src[RIDX(i - 1, j + 1, dim)].blue)) /
+                             6);
+        dst[RIDX(i, j, dim)] = current_pixel;
+    }
+
+    j = dim - 1;
+    for (i = 1; i < dim - 1; i++)
+    {
+        pcurrent_pixel->red =
+            (unsigned short)(((int)(src[RIDX(i - 1, j, dim)].red + src[RIDX(i - 1, j - 1, dim)].red +
+                                    src[RIDX(i, j, dim)].red + src[RIDX(i, j - 1, dim)].red +
+                                    src[RIDX(i + 1, j, dim)].red + src[RIDX(i + 1, j - 1, dim)].red)) /
+                             6);
+        pcurrent_pixel->green =
+            (unsigned short)(((int)(src[RIDX(i - 1, j, dim)].green + src[RIDX(i - 1, j - 1, dim)].green +
+                                    src[RIDX(i, j, dim)].green + src[RIDX(i, j - 1, dim)].green +
+                                    src[RIDX(i + 1, j, dim)].green + src[RIDX(i + 1, j - 1, dim)].green)) /
+                             6);
+        pcurrent_pixel->blue =
+            (unsigned short)(((int)(src[RIDX(i - 1, j, dim)].blue + src[RIDX(i - 1, j - 1, dim)].blue +
+                                    src[RIDX(i, j, dim)].blue + src[RIDX(i, j - 1, dim)].blue +
+                                    src[RIDX(i + 1, j, dim)].blue + src[RIDX(i + 1, j - 1, dim)].blue)) /
+                             6);
+        dst[RIDX(i, j, dim)] = current_pixel;
+    }
+
+    i = 0;
+    for (j = 1; j < dim - 1; j++)
+    {
+        pcurrent_pixel->red =
+            (unsigned short)(((int)(src[RIDX(i, j, dim)].red + src[RIDX(i + 1, j, dim)].red +
+                                    src[RIDX(i, j - 1, dim)].red + src[RIDX(i + 1, j - 1, dim)].red +
+                                    src[RIDX(i, j + 1, dim)].red + src[RIDX(i + 1, j + 1, dim)].red)) /
+                             6);
+        pcurrent_pixel->green =
+            (unsigned short)(((int)(src[RIDX(i, j, dim)].green + src[RIDX(i + 1, j, dim)].green +
+                                    src[RIDX(i, j - 1, dim)].green + src[RIDX(i + 1, j - 1, dim)].green +
+                                    src[RIDX(i, j + 1, dim)].green + src[RIDX(i + 1, j + 1, dim)].green)) /
+                             6);
+        pcurrent_pixel->blue =
+            (unsigned short)(((int)(src[RIDX(i, j, dim)].blue + src[RIDX(i + 1, j, dim)].blue +
+                                    src[RIDX(i, j - 1, dim)].blue + src[RIDX(i + 1, j - 1, dim)].blue +
+                                    src[RIDX(i, j + 1, dim)].blue + src[RIDX(i + 1, j + 1, dim)].blue)) /
+                             6);
+        dst[RIDX(i, j, dim)] = current_pixel;
+    }
+
+    for (i = 1; i < dim - 1; i++)
+    {
+        for (j = 1; j < dim - 1; j++)
+        {
+            pcurrent_pixel->red =
+                (unsigned short)(((int)(src[RIDX(i + 1, j, dim)].red + src[RIDX(i + 1, j - 1, dim)].red +
+                                        src[RIDX(i, j, dim)].red + src[RIDX(i - 1, j, dim)].red +
+                                        src[RIDX(i, j - 1, dim)].red + src[RIDX(i - 1, j - 1, dim)].red +
+                                        src[RIDX(i, j + 1, dim)].red + src[RIDX(i - 1, j + 1, dim)].red +
+                                        src[RIDX(i + 1, j + 1, dim)].red)) /
+                                 9);
+            pcurrent_pixel->green =
+                (unsigned short)(((int)(src[RIDX(i + 1, j, dim)].green + src[RIDX(i + 1, j - 1, dim)].green +
+                                        src[RIDX(i, j, dim)].green + src[RIDX(i - 1, j, dim)].green +
+                                        src[RIDX(i, j - 1, dim)].green + src[RIDX(i - 1, j - 1, dim)].green +
+                                        src[RIDX(i, j + 1, dim)].green + src[RIDX(i - 1, j + 1, dim)].green +
+                                        src[RIDX(i + 1, j + 1, dim)].green)) /
+                                 9);
+            pcurrent_pixel->blue =
+                (unsigned short)(((int)(src[RIDX(i + 1, j, dim)].blue + src[RIDX(i + 1, j - 1, dim)].blue +
+                                        src[RIDX(i, j, dim)].blue + src[RIDX(i - 1, j, dim)].blue +
+                                        src[RIDX(i, j - 1, dim)].blue + src[RIDX(i - 1, j - 1, dim)].blue +
+                                        src[RIDX(i, j + 1, dim)].blue + src[RIDX(i - 1, j + 1, dim)].blue +
+                                        src[RIDX(i + 1, j + 1, dim)].blue)) /
+                                 9);
+            dst[RIDX(i, j, dim)] = current_pixel;
+        }
+    }
 }
 
 

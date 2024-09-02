@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "unistd.h": "c",
+        "cookie_io_functions_t.h": "c",
+        "libc-header-start.h": "c"
+    }
+}

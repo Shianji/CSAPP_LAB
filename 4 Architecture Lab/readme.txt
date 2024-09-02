@@ -1,0 +1,1 @@
+wsl ubuntu22.04 make编译时会报错  可以使用虚拟机ubuntu20.04
